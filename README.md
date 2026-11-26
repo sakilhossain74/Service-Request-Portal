@@ -37,7 +37,7 @@ A full-stack MERN (MongoDB, Express.js, React.js, Node.js) web application for s
 - **MVC Backend Structure:** Routes (`src/routes/`) define endpoints and attach middleware (`protect`, `authorizeRoles`, `validate`). Controllers (`src/controllers/`) implement business logic and database queries. Models (`src/models/`) define Mongoose schemas and indexes.
 - **JWT Authentication Flow:** On login/register, the backend signs a JWT containing the user's `_id`. The frontend stores the token in `localStorage` and attaches `Authorization: Bearer <token>` via an Axios request interceptor. On page refresh, `AuthContext` calls `GET /api/auth/me` to restore and validate the session.
 - **Role-Based Access & Ownership:** `protect` verifies the JWT and attaches `req.user`. `authorizeRoles('admin')` restricts admin-only routes (staff list, assignment, status changes). For standard users, request queries are scoped with `{ _id, createdBy: req.user._id }` so users can only access or modify their own requests.
-- **Status Workflow:** Assigning a staff member to a `Pending` request automatically sets its status to `Assigned` and records `assignedAt`. Status transitions are validated against `ALLOWED_STATUS_TRANSITIONS` (`Assigned → In Progress → Resolved`), and `resolvedAt` is recorded upon resolution.
+- **Status Workflow:** `Pending → Assigned → In Progress → Resolved`. A request cannot move past `Pending` without an assigned staff member. Resolved requests cannot be reassigned or have their status changed.
 - **Why `Staff` is a Separate Collection:** The assessment specifies two login roles (`Admin` and `User`). Modelling assignable technicians as a separate `Staff` collection allows Admins to assign requests to staff members without creating unnecessary login accounts for them.
 
 ### Project Structure
@@ -146,7 +146,7 @@ Service-Request-Portal/
 | `JWT_EXPIRES_IN` | JWT expiration duration | `7d` |
 | `CLIENT_URL` | Allowed CORS origin for frontend | `http://localhost:5173` |
 | `SEED_ADMIN_EMAIL` | Optional override for seeded admin email | `admin@example.com` |
-| `SEED_ADMIN_PASSWORD` | Optional override for seeded admin password | `Admin@123` |
+| `SEED_ADMIN_PASSWORD` | Optional override for seeded admin password | `| `SEED_ADMIN_PASSWORD` | Optional override for seeded admin password | `change_this_password` (default: `Admin@123`)` |
 
 ### Frontend (`frontend/.env`)
 
@@ -217,8 +217,8 @@ Base URL: `http://localhost:5000/api`
 
 ## Known Limitations & Future Improvements
 
-- **Local MongoDB:** MongoDB is not pre-installed in the development environment used to build this repo, so live end-to-end DB tests require starting a local MongoDB instance or configuring MongoDB Atlas in `backend/.env`.
-- **Future improvements:** Add staff management UI (`POST /api/staff`), request comment threads, email notifications, and automated Jest/Supertest integration tests.
+- **Automated Testing:** Automated Jest/Supertest integration tests have not yet been implemented.
+- **Future Improvements:** Add a staff management interface, request comment threads, email notifications, and automated integration tests.
 
 ---
 

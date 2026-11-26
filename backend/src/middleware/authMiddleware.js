@@ -14,6 +14,9 @@ export const protect = asyncHandler(async (req, _res, next) => {
   const token = authHeader.split(' ')[1];
 
   try {
+    if (!process.env.JWT_SECRET) {
+      throw new ApiError(500, 'JWT_SECRET is not configured');
+    }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id).select('-password');
 

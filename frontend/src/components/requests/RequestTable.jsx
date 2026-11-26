@@ -46,7 +46,14 @@ const RequestTable = ({ requests, isAdmin, onDeleteClick }) => {
                       <span className="text-muted small">Unassigned</span>
                     )}
                   </td>
-                  {isAdmin && <td>{req.createdBy?.name || '—'}</td>}
+                  {isAdmin && (
+                    <td>
+                      <div>{req.createdBy?.name || '—'}</div>
+                      <small className="text-muted">
+                        {req.createdBy?.email || '—'}
+                      </small>
+                    </td>
+                  )}
                   <td className="text-muted small">{formatDate(req.createdAt)}</td>
                   <td className="text-end">
                     <div className="btn-group btn-group-sm">
@@ -105,7 +112,13 @@ const RequestTable = ({ requests, isAdmin, onDeleteClick }) => {
               </div>
               <div className="small text-muted mb-3">
                 Assigned: {req.assignedTo ? req.assignedTo.name : 'Unassigned'}
-                {isAdmin && ` | By: ${req.createdBy?.name || '—'}`}
+                {isAdmin && (
+                  <div>
+                    Customer: {req.createdBy?.name || '—'}
+                    <br />
+                    Email: {req.createdBy?.email || '—'}
+                  </div>
+                )}
               </div>
               <div className="d-flex gap-2">
                 <Link to={`/requests/${req._id}`} className="btn btn-sm btn-outline-primary">

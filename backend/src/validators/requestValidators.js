@@ -32,6 +32,18 @@ export const createRequestValidator = [
 ];
 
 export const updateRequestValidator = [
+  body().custom((_, { req }) => {
+    const fields = ['title', 'description', 'category', 'priority'];
+    const hasField = fields.some((field) =>
+      Object.prototype.hasOwnProperty.call(req.body, field)
+    );
+
+    if (!hasField) {
+      throw new Error('At least one field is required to update');
+    }
+
+    return true;
+  }),
   ...requestIdParamValidator,
   body('title')
     .optional()
