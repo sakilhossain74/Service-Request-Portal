@@ -1,8 +1,8 @@
 const EmptyState = ({ title = 'No records found', message = '', action = null }) => {
   return (
-    <div className="card portal-card p-5 text-center">
-      <h5 className="fw-semibold text-dark mb-2">{title}</h5>
-      {message && <p className="text-muted mb-3">{message}</p>}
+    <div className="card portal-card empty-state">
+      <div className="empty-state-title">{title}</div>
+      {message && <p className="empty-state-desc">{message}</p>}
       {action && <div>{action}</div>}
     </div>
   );

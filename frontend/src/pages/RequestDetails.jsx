@@ -95,7 +95,8 @@ const RequestDetails = () => {
 
   return (
     <div>
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      {/* Top action bar */}
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
         <Link to="/requests" className="btn btn-outline-secondary btn-sm">
           ← Back to Requests
         </Link>
@@ -116,11 +117,14 @@ const RequestDetails = () => {
       </div>
 
       <div className="row g-4">
+        {/* Main detail card */}
         <div className="col-lg-8">
           <div className="card portal-card">
             <div className="card-body p-4">
               <div className="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
-                <h3 className="fw-bold mb-0">{request.title}</h3>
+                <h3 className="fw-bold mb-0" style={{ color: 'var(--text-heading)', fontSize: '1.25rem' }}>
+                  {request.title}
+                </h3>
                 <div className="d-flex gap-2">
                   <PriorityBadge priority={request.priority} />
                   <StatusBadge status={request.status} />
@@ -128,55 +132,47 @@ const RequestDetails = () => {
               </div>
 
               <div className="mb-4">
-                <div className="text-muted small text-uppercase fw-semibold mb-1">Description</div>
-                <p className="mb-0" style={{ whiteSpace: 'pre-line' }}>
+                <span className="detail-label">Description</span>
+                <p className="mb-0" style={{ whiteSpace: 'pre-line', color: 'var(--text)', lineHeight: 1.6 }}>
                   {request.description}
                 </p>
               </div>
 
-              <hr />
+              <hr style={{ borderColor: 'var(--border)', margin: '1.25rem 0' }} />
 
-              <div className="row g-3 small">
-                <div className="col-sm-6">
-                  <span className="text-muted d-block">Category</span>
-                  <strong>{request.category}</strong>
-                </div>
-                <div className="col-sm-6">
-                  <span className="text-muted d-block">Submitted By</span>
-                  <strong>
-                    {request.createdBy?.name} ({request.createdBy?.email})
-                  </strong>
-                </div>
-                <div className="col-sm-6">
-                  <span className="text-muted d-block">Assigned Staff</span>
-                  <strong>
-                    {request.assignedTo
-                      ? `${request.assignedTo.name} (${request.assignedTo.department})`
-                      : 'Unassigned'}
-                  </strong>
-                </div>
-                <div className="col-sm-6">
-                  <span className="text-muted d-block">Created At</span>
-                  <strong>{formatDateTime(request.createdAt)}</strong>
-                </div>
-                <div className="col-sm-6">
-                  <span className="text-muted d-block">Assigned At</span>
-                  <strong>{formatDateTime(request.assignedAt)}</strong>
-                </div>
-                <div className="col-sm-6">
-                  <span className="text-muted d-block">Resolved At</span>
-                  <strong>{formatDateTime(request.resolvedAt)}</strong>
-                </div>
+              <div className="row g-3">
+                {[
+                  { label: 'Category', value: request.category },
+                  {
+                    label: 'Submitted By',
+                    value: `${request.createdBy?.name} (${request.createdBy?.email})`
+                  },
+                  {
+                    label: 'Assigned Staff',
+                    value: request.assignedTo
+                      ? `${request.assignedTo.name} — ${request.assignedTo.department}`
+                      : 'Unassigned'
+                  },
+                  { label: 'Created At',   value: formatDateTime(request.createdAt) },
+                  { label: 'Assigned At',  value: formatDateTime(request.assignedAt) },
+                  { label: 'Resolved At',  value: formatDateTime(request.resolvedAt) },
+                ].map(({ label, value }) => (
+                  <div className="col-sm-6" key={label}>
+                    <span className="detail-label">{label}</span>
+                    <span className="detail-value">{value}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
+        {/* Admin controls panel */}
         {isAdmin && (
           <div className="col-lg-4">
-            <div className="card portal-card">
-              <div className="card-body p-4 d-flex flex-column gap-4">
-                <h5 className="fw-bold mb-0">Admin Controls</h5>
+            <div className="admin-panel">
+              <div className="admin-panel-header">Admin Controls</div>
+              <div className="admin-panel-body">
                 <AssignStaffForm
                   staffList={staffList}
                   currentStaffId={request.assignedTo?._id || ''}
@@ -184,7 +180,7 @@ const RequestDetails = () => {
                   submitting={actionLoading}
                   onAssign={handleAssign}
                 />
-                <hr className="my-0" />
+                <hr style={{ borderColor: 'var(--border)', margin: '0' }} />
                 <StatusUpdateForm
                   currentStatus={request.status}
                   hasAssignedStaff={Boolean(request.assignedTo)}
@@ -200,7 +196,7 @@ const RequestDetails = () => {
       <ConfirmModal
         show={showDeleteModal}
         title="Delete Service Request"
-        message={`Are you sure you want to delete "${request.title}"?`}
+        message={`Are you sure you want to delete "${request.title}"? This action cannot be undone.`}
         confirmText="Delete"
         loading={actionLoading}
         onConfirm={handleDelete}

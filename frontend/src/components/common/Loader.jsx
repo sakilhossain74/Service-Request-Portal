@@ -5,10 +5,10 @@ const Loader = ({ message = 'Loading...', fullPage = false }) => {
         fullPage ? 'min-vh-100' : 'py-5'
       }`}
     >
-      <div className="spinner-border text-primary mb-2" role="status">
+      <div className="spinner-border text-primary mb-2" role="status" style={{ width: '2rem', height: '2rem' }}>
         <span className="visually-hidden">{message}</span>
       </div>
-      <span className="text-muted small">{message}</span>
+      <span className="text-muted" style={{ fontSize: '0.875rem' }}>{message}</span>
     </div>
   );
 };

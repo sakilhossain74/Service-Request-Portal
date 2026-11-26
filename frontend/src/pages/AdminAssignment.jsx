@@ -119,11 +119,13 @@ const AdminAssignment = () => {
 
   return (
     <div>
-      <div className="mb-4">
-        <h2 className="fw-bold mb-1">Admin Assignment &amp; Workflow</h2>
-        <p className="text-muted mb-0">
-          Assign staff members to service requests and advance workflow status
-        </p>
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 page-header-row">
+        <div>
+          <h2 className="page-title">Assignments &amp; Workflow</h2>
+          <p className="page-subtitle">
+            Assign staff members to service requests and advance workflow status
+          </p>
+        </div>
       </div>
 
       <RequestFilters
@@ -149,14 +151,14 @@ const AdminAssignment = () => {
           <div className="card portal-card">
             <div className="table-responsive">
               <table className="table table-hover align-middle mb-0">
-                <thead className="table-light">
+                <thead>
                   <tr>
                     <th>Request</th>
                     <th>Requester</th>
                     <th>Priority</th>
                     <th>Status</th>
-                    <th style={{ minWidth: '250px' }}>Assign Staff</th>
-                    <th style={{ minWidth: '170px' }}>Advance Status</th>
+                    <th style={{ minWidth: '260px' }}>Assign Staff</th>
+                    <th style={{ minWidth: '180px' }}>Advance Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -170,11 +172,12 @@ const AdminAssignment = () => {
                           <Link
                             to={`/requests/${req._id}`}
                             className="fw-medium text-decoration-none d-block"
+                            style={{ color: 'var(--text-heading)' }}
                           >
                             {req.title}
                           </Link>
-                          <span className="text-muted small">
-                            {req.category} • {formatDate(req.createdAt)}
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>
+                            {req.category} · {formatDate(req.createdAt)}
                           </span>
                         </td>
                         <td>{req.createdBy?.name || '—'}</td>
@@ -197,7 +200,7 @@ const AdminAssignment = () => {
                                 }))
                               }
                             >
-                              <option value="">Select staff...</option>
+                              <option value="">Select staff…</option>
                               {staffList.map((staff) => (
                                 <option key={staff._id} value={staff._id}>
                                   {staff.name} ({staff.department})
@@ -214,13 +217,13 @@ const AdminAssignment = () => {
                               }
                               onClick={() => handleAssign(req._id)}
                             >
-                              {isBusy ? '...' : 'Assign'}
+                              {isBusy ? '…' : 'Assign'}
                             </button>
                           </div>
                         </td>
                         <td>
                           {allowedNext.length === 0 ? (
-                            <span className="text-muted small">
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                               {req.status === 'Pending' ? 'Assign staff first' : 'Completed'}
                             </span>
                           ) : (
@@ -230,9 +233,7 @@ const AdminAssignment = () => {
                               disabled={isBusy}
                               onChange={(e) => handleStatusChange(req._id, e.target.value)}
                             >
-                              <option value="" disabled>
-                                Move to...
-                              </option>
+                              <option value="" disabled>Move to…</option>
                               {allowedNext.map((status) => (
                                 <option key={status} value={status}>
                                   {status}

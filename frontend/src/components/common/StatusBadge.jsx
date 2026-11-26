@@ -1,12 +1,13 @@
+// Class map uses CSS classes from custom.css — no Bootstrap bg-* colors.
 const STATUS_CLASS_MAP = {
-  Pending: 'bg-warning text-dark',
-  Assigned: 'bg-info text-dark',
-  'In Progress': 'bg-primary text-white',
-  Resolved: 'bg-success text-white'
+  Pending:      'badge-status-pending',
+  Assigned:     'badge-status-assigned',
+  'In Progress':'badge-status-inprogress',
+  Resolved:     'badge-status-resolved',
 };
 
 const StatusBadge = ({ status }) => {
-  const badgeClass = STATUS_CLASS_MAP[status] || 'bg-secondary text-white';
+  const badgeClass = STATUS_CLASS_MAP[status] || 'badge-status-default';
   return <span className={`badge ${badgeClass}`}>{status}</span>;
 };
 

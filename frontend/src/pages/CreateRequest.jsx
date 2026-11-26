@@ -26,9 +26,11 @@ const CreateRequest = () => {
     <div className="row justify-content-center">
       <div className="col-lg-8">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2 className="fw-bold mb-0">Create Service Request</h2>
+          <div>
+            <h2 className="page-title mb-0">Create Service Request</h2>
+          </div>
           <Link to="/requests" className="btn btn-outline-secondary btn-sm">
-            Back to List
+            ← Back to List
           </Link>
         </div>
 

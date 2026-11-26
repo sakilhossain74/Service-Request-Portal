@@ -12,10 +12,14 @@ const Navbar = () => {
     navigate('/login');
   };
 
+  // NavLink receives isActive from react-router-dom and adds the 'active' class automatically
+  const navLinkClass = ({ isActive }) =>
+    `nav-link${isActive ? ' active' : ''}`;
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark navbar-portal shadow-sm">
+    <nav className="navbar navbar-expand-lg navbar-dark navbar-portal">
       <div className="container">
-        <Link className="navbar-brand fw-bold" to="/dashboard">
+        <Link className="navbar-brand" to="/dashboard">
           Service Portal
         </Link>
         <button
@@ -31,37 +35,35 @@ const Navbar = () => {
         </button>
 
         <div className="collapse navbar-collapse" id="portalNavbar">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
             <li className="nav-item">
-              <NavLink className="nav-link" to="/dashboard">
+              <NavLink className={navLinkClass} to="/dashboard">
                 Dashboard
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to="/requests">
+              <NavLink className={navLinkClass} to="/requests">
                 Requests
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to="/requests/new">
+              <NavLink className={navLinkClass} to="/requests/new">
                 New Request
               </NavLink>
             </li>
             {isAdmin && (
               <li className="nav-item">
-                <NavLink className="nav-link" to="/admin/assignments">
+                <NavLink className={navLinkClass} to="/admin/assignments">
                   Assignments
                 </NavLink>
               </li>
             )}
           </ul>
 
-          <div className="d-flex align-items-center gap-3 text-white">
-            <span className="small">
-              {user?.name}{' '}
-              <span className="badge bg-light text-dark text-uppercase ms-1">
-                {user?.role}
-              </span>
+          <div className="d-flex align-items-center gap-3">
+            <span className="nav-user-name">
+              {user?.name}
+              <span className="nav-role-badge">{user?.role}</span>
             </span>
             <button
               type="button"

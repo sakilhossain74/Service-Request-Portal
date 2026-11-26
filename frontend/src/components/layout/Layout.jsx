@@ -5,10 +5,10 @@ const Layout = () => {
   return (
     <div className="min-vh-100 d-flex flex-column">
       <Navbar />
-      <main className="container py-4 flex-grow-1">
+      <main className="container portal-main flex-grow-1 page-fade-in">
         <Outlet />
       </main>
-      <footer className="bg-white border-top py-3 text-center text-muted small">
+      <footer className="portal-footer">
         Service Request &amp; Resolution Portal
       </footer>
     </div>

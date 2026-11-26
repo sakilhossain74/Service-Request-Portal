@@ -52,14 +52,14 @@ const EditRequest = () => {
     <div className="row justify-content-center">
       <div className="col-lg-8">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2 className="fw-bold mb-0">Edit Service Request</h2>
+          <h2 className="page-title mb-0">Edit Service Request</h2>
           <Link to={`/requests/${id}`} className="btn btn-outline-secondary btn-sm">
-            Back to Details
+            ← Back to Details
           </Link>
         </div>
 
         {!canEdit ? (
-          <div className="alert alert-warning">
+          <div className="alert-warning-custom">
             This request is currently <strong>{request?.status}</strong>. Only{' '}
             <strong>Pending</strong> requests can be edited by the requester.
           </div>

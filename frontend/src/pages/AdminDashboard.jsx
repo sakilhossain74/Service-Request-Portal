@@ -38,10 +38,10 @@ const AdminDashboard = () => {
 
   return (
     <div>
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 page-header-row">
         <div>
-          <h2 className="fw-bold mb-1">Admin Dashboard</h2>
-          <p className="text-muted mb-0">System-wide service request metrics and recent activity</p>
+          <h2 className="page-title">Admin Dashboard</h2>
+          <p className="page-subtitle">System-wide service request metrics and recent activity</p>
         </div>
         <div className="d-flex gap-2">
           <Link to="/admin/assignments" className="btn btn-primary">
@@ -75,12 +75,12 @@ const AdminDashboard = () => {
         <div className="col-md-6">
           <div className="card portal-card h-100">
             <div className="card-body">
-              <h6 className="fw-semibold mb-3">Breakdown by Priority</h6>
+              <h6 className="section-title mb-3">Breakdown by Priority</h6>
               {Object.entries(byPriority).map(([priority, count]) => (
                 <div key={priority} className="mb-3">
-                  <div className="d-flex justify-content-between small mb-1">
-                    <span>{priority}</span>
-                    <span className="fw-semibold">{count}</span>
+                  <div className="d-flex justify-content-between mb-1" style={{ fontSize: '0.8125rem' }}>
+                    <span style={{ color: 'var(--text)' }}>{priority}</span>
+                    <span style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{count}</span>
                   </div>
                   <div className="progress" style={{ height: '8px' }}>
                     <div
@@ -103,12 +103,12 @@ const AdminDashboard = () => {
         <div className="col-md-6">
           <div className="card portal-card h-100">
             <div className="card-body">
-              <h6 className="fw-semibold mb-3">Breakdown by Category</h6>
+              <h6 className="section-title mb-3">Breakdown by Category</h6>
               {Object.entries(byCategory).map(([category, count]) => (
                 <div key={category} className="mb-2">
-                  <div className="d-flex justify-content-between small mb-1">
-                    <span>{category}</span>
-                    <span className="fw-semibold">{count}</span>
+                  <div className="d-flex justify-content-between mb-1" style={{ fontSize: '0.8125rem' }}>
+                    <span style={{ color: 'var(--text)' }}>{category}</span>
+                    <span style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{count}</span>
                   </div>
                   <div className="progress" style={{ height: '6px' }}>
                     <div
@@ -124,7 +124,7 @@ const AdminDashboard = () => {
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="fw-semibold mb-0">Recent Requests</h5>
+        <h5 className="section-title">Recent Requests</h5>
         <Link to="/requests" className="btn btn-sm btn-outline-primary">
           View All
         </Link>
@@ -136,7 +136,7 @@ const AdminDashboard = () => {
         <div className="card portal-card">
           <div className="table-responsive">
             <table className="table table-hover align-middle mb-0">
-              <thead className="table-light">
+              <thead>
                 <tr>
                   <th>Title</th>
                   <th>Requester</th>
@@ -161,8 +161,8 @@ const AdminDashboard = () => {
                     <td>
                       <StatusBadge status={req.status} />
                     </td>
-                    <td>{req.assignedTo?.name || <span className="text-muted small">Unassigned</span>}</td>
-                    <td className="text-muted small">{formatDate(req.createdAt)}</td>
+                    <td>{req.assignedTo?.name || <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Unassigned</span>}</td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{formatDate(req.createdAt)}</td>
                   </tr>
                 ))}
               </tbody>

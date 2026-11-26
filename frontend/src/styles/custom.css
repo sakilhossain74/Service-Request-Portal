@@ -1,55 +1,1017 @@
+/* ==========================================================================
+   Service Request Portal — Design System
+   Sections: Tokens | Base | Layout/Nav | Cards | Stats | Table | Forms |
+             Buttons | Badges | Modals/Toasts | Utilities | Responsive
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. DESIGN TOKENS
+   -------------------------------------------------------------------------- */
 :root {
-  --portal-bg: #f4f6f9;
-  --portal-primary: #1e40af;
-  --portal-primary-dark: #1e3a8a;
-  --portal-card-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+  /* Page & surfaces */
+  --bg-page:        #f3f4f8;
+  --surface:        #ffffff;
+  --border:         #e5e7eb;
+  --border-strong:  #d1d5db;
+
+  /* Primary – Indigo */
+  --primary:        #4f46e5;
+  --primary-hover:  #4338ca;
+  --primary-soft:   #eef2ff;
+  --primary-ring:   rgba(79, 70, 229, 0.25);
+
+  /* Navigation */
+  --nav-bg:         #111936;
+  --nav-bg-hover:   #1c2547;
+  --nav-text:       #c7cbe0;
+  --nav-active-bg:  #4f46e5;
+  --nav-active-text:#ffffff;
+
+  /* Text */
+  --text:           #1f2937;
+  --text-muted:     #6b7280;
+  --text-heading:   #111827;
+
+  /* Status / semantic */
+  --success:        #16a34a;  --success-soft: #dcfce7;
+  --info:           #2563eb;  --info-soft:    #dbeafe;
+  --warning:        #ea580c;  --warning-soft: #ffedd5;
+  --pending:        #a16207;  --pending-soft: #fef3c7;
+  --danger:         #dc2626;  --danger-soft:  #fee2e2;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+  --shadow-lg: 0 12px 28px rgba(16, 24, 40, 0.12);
+
+  /* Transitions */
+  --transition: all 0.2s ease;
+
+  /* Legacy aliases kept for any stray references */
+  --portal-bg:           var(--bg-page);
+  --portal-primary:      var(--primary);
+  --portal-primary-dark: var(--primary-hover);
+  --portal-card-shadow:  var(--shadow-sm);
+}
+
+/* --------------------------------------------------------------------------
+   2. BASE / GLOBAL
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--portal-bg);
-  color: #1e293b;
+  background-color: var(--bg-page);
+  color: var(--text);
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
+::selection {
+  background-color: var(--primary-soft);
+  color: var(--primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-heading);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+a {
+  color: var(--primary);
+  transition: color var(--transition);
+}
+a:hover {
+  color: var(--primary-hover);
+}
+
+code {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-size: 0.875em;
+}
+
+/* Focus states – accessible, on-brand */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--primary-ring);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Page fade-in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-fade-in {
+  animation: fadeIn 0.2s ease both;
+}
+
+/* --------------------------------------------------------------------------
+   3. BOOTSTRAP PRIMARY COLOR OVERRIDES
+   Force Bootstrap's default blue → our indigo everywhere.
+   -------------------------------------------------------------------------- */
+
+/* -- Primary button -- */
+.btn-primary {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+}
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none !important;
+}
+.btn-primary:disabled,
+.btn-primary.disabled {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btn-primary:focus-visible {
+  box-shadow: 0 0 0 3px var(--primary-ring) !important;
+}
+
+/* -- Outline primary -- */
+.btn-outline-primary {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  background: transparent;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.btn-outline-primary:hover:not(:disabled) {
+  background-color: var(--primary-soft) !important;
+  color: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  transform: translateY(-1px);
+}
+.btn-outline-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+.btn-outline-primary:focus-visible {
+  box-shadow: 0 0 0 3px var(--primary-ring) !important;
+}
+
+/* -- Outline secondary -- */
+.btn-outline-secondary {
+  color: var(--text-muted) !important;
+  border-color: var(--border-strong) !important;
+  background: var(--surface);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.btn-outline-secondary:hover:not(:disabled) {
+  background-color: var(--bg-page) !important;
+  color: var(--text) !important;
+  transform: translateY(-1px);
+}
+
+/* -- Outline danger -- */
+.btn-outline-danger {
+  color: var(--danger) !important;
+  border-color: var(--danger) !important;
+  background: transparent;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.btn-outline-danger:hover:not(:disabled) {
+  background-color: var(--danger-soft) !important;
+  color: var(--danger) !important;
+  transform: translateY(-1px);
+}
+
+/* -- Danger button -- */
+.btn-danger {
+  background-color: var(--danger) !important;
+  border-color: var(--danger) !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: #b91c1c !important;
+  border-color: #b91c1c !important;
+  transform: translateY(-1px);
+}
+
+/* -- Outline light (navbar logout) -- */
+.btn-outline-light {
+  border-radius: var(--radius-sm) !important;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+/* Global button sizing */
+.btn {
+  padding: 0.5rem 1.1rem;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.btn-sm {
+  padding: 0.3rem 0.75rem;
+  min-height: 32px;
+  font-size: 0.8125rem;
+}
+.btn-lg {
+  padding: 0.65rem 1.5rem;
+  min-height: 48px;
+  font-size: 1rem;
+}
+
+/* -- Bootstrap text-primary, bg-primary, border-primary -- */
+.text-primary { color: var(--primary) !important; }
+.bg-primary   { background-color: var(--primary) !important; }
+.border-primary { border-color: var(--primary) !important; }
+
+/* -- Pagination active state -- */
+.page-item.active .page-link {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #fff !important;
+}
+.page-link {
+  color: var(--primary) !important;
+  border-radius: var(--radius-sm) !important;
+  border-color: var(--border) !important;
+  transition: var(--transition);
+  min-width: 36px;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.page-link:hover {
+  background-color: var(--primary-soft) !important;
+  color: var(--primary-hover) !important;
+}
+.page-item.disabled .page-link {
+  color: var(--text-muted) !important;
+  background-color: var(--bg-page) !important;
+}
+.pagination {
+  gap: 4px;
+}
+
+/* -- Form focus rings -- */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-ring) !important;
+  outline: none;
+}
+
+/* -- Spinner -- */
+.text-primary.spinner-border,
+.spinner-border.text-primary {
+  color: var(--primary) !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. LAYOUT / NAVIGATION
+   -------------------------------------------------------------------------- */
 .navbar-portal {
-  background: linear-gradient(135deg, var(--portal-primary-dark), var(--portal-primary));
+  background: var(--nav-bg) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.18);
 }
 
-.portal-card {
-  border: 0;
-  border-radius: 0.75rem;
-  box-shadow: var(--portal-card-shadow);
+.navbar-portal .navbar-brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff !important;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: opacity var(--transition);
+}
+.navbar-portal .navbar-brand::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+.navbar-portal .navbar-brand:hover {
+  opacity: 0.9;
 }
 
+.navbar-portal .nav-link {
+  color: var(--nav-text) !important;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 0.9rem !important;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  position: relative;
+}
+.navbar-portal .nav-link:hover {
+  background-color: var(--nav-bg-hover);
+  color: #fff !important;
+}
+.navbar-portal .nav-link.active {
+  background-color: var(--nav-active-bg);
+  color: var(--nav-active-text) !important;
+  font-weight: 600;
+}
+
+.navbar-portal .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.2);
+  padding: 0.3rem 0.5rem;
+}
+.navbar-portal .navbar-toggler-icon {
+  filter: invert(1) opacity(0.75);
+}
+
+/* User info + badge in navbar */
+.nav-user-name {
+  color: var(--nav-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.nav-role-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(79, 70, 229, 0.25);
+  color: #c4c9f0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  vertical-align: middle;
+  margin-left: 0.4rem;
+}
+
+/* Footer */
+.portal-footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 0.85rem 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+/* Main content area */
+.portal-main {
+  padding-top: 1.75rem;
+  padding-bottom: 2rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. CARDS & CONTAINERS
+   -------------------------------------------------------------------------- */
+.portal-card,
+.card.portal-card {
+  background: var(--surface);
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.portal-card .card-body {
+  padding: 1.25rem 1.5rem;
+}
+
+.portal-card .card-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. STAT CARDS
+   -------------------------------------------------------------------------- */
 .stat-card {
-  border: 0;
-  border-radius: 0.75rem;
-  box-shadow: var(--portal-card-shadow);
-  transition: transform 0.15s ease;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  overflow: hidden;
+  position: relative;
 }
-
 .stat-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.stat-card .card-body {
+  padding: 1.25rem 1.5rem;
+  position: relative;
+}
+.stat-card .stat-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-heading);
+  margin-bottom: 0;
+}
+.stat-card .stat-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
 }
 
+/* Accent color left-border variants (replaces Bootstrap border-{accent}) */
+.stat-card-dark     { border-left: 4px solid var(--text-heading) !important; }
+.stat-card-primary  { border-left: 4px solid var(--primary)      !important; }
+.stat-card-warning  { border-left: 4px solid var(--pending)      !important; }
+.stat-card-info     { border-left: 4px solid var(--warning)      !important; }
+.stat-card-success  { border-left: 4px solid var(--success)      !important; }
+.stat-card-danger   { border-left: 4px solid var(--danger)       !important; }
+.stat-card-secondary{ border-left: 4px solid var(--text-muted)   !important; }
+
+/* --------------------------------------------------------------------------
+   7. REQUEST TABLE
+   -------------------------------------------------------------------------- */
+.table {
+  margin-bottom: 0;
+  color: var(--text);
+}
+.table th {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0.75rem 1rem;
+  background: #f8f9fb;
+  border-bottom: 1px solid var(--border) !important;
+  white-space: nowrap;
+}
+.table td {
+  padding: 0.85rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+.table tbody tr {
+  transition: background-color 0.12s ease;
+}
+.table tbody tr:hover {
+  background-color: var(--primary-soft) !important;
+}
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Table link (request title) */
+.table td a.text-decoration-none {
+  color: var(--text-heading);
+  font-weight: 600;
+}
+.table td a.text-decoration-none:hover {
+  color: var(--primary);
+}
+
+/* Table responsive wrapper (no page-level scroll) */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --------------------------------------------------------------------------
+   8. FORMS & INPUTS
+   -------------------------------------------------------------------------- */
+.form-control,
+.form-select {
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.875rem;
+  color: var(--text);
+  transition: var(--transition);
+  min-height: 40px;
+}
+.form-control::placeholder {
+  color: #9ca3af;
+}
+.form-control:disabled,
+.form-select:disabled {
+  background-color: #f9fafb;
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* Validation */
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+}
+.invalid-feedback {
+  color: var(--danger);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 0.3rem;
+}
+
+.form-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+/* Filter toolbar */
+.filter-toolbar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+.filter-toolbar .form-label {
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   9. BADGES — STATUS
+   -------------------------------------------------------------------------- */
+.badge {
+  font-weight: 600;
+  font-size: 0.74rem;
+  padding: 0.3em 0.7em;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  line-height: 1;
+}
+/* Dot before text */
+.badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* Status */
+.badge-status-pending {
+  background-color: var(--pending-soft);
+  color: var(--pending);
+}
+.badge-status-assigned {
+  background-color: var(--warning-soft);
+  color: var(--warning);
+}
+.badge-status-inprogress {
+  background-color: var(--info-soft);
+  color: var(--info);
+}
+.badge-status-resolved {
+  background-color: var(--success-soft);
+  color: var(--success);
+}
+.badge-status-default {
+  background-color: #f3f4f6;
+  color: var(--text-muted);
+}
+
+/* Priority */
+.badge-priority-low {
+  background-color: #f3f4f6;
+  color: var(--text-muted);
+}
+.badge-priority-medium {
+  background-color: var(--pending-soft);
+  color: var(--pending);
+}
+.badge-priority-high {
+  background-color: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* --------------------------------------------------------------------------
+   10. AUTH PAGES
+   -------------------------------------------------------------------------- */
 .auth-wrapper {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem 1rem;
-  background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+  padding: 2rem 1rem;
+  background: linear-gradient(145deg, #eef2ff 0%, #f3f4f8 50%, #f8fafc 100%);
 }
-
 .auth-card {
   width: 100%;
-  max-width: 440px;
+  max-width: 448px;
+}
+.auth-card .card {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+.auth-card .card-body {
+  padding: 2.25rem 2.25rem !important;
+}
+.auth-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+}
+.auth-subtitle {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+.demo-creds {
+  background: var(--primary-soft);
+  border: 1px solid rgba(79, 70, 229, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  color: var(--text);
+}
+.demo-creds strong {
+  color: var(--primary);
 }
 
-.table th {
-  font-size: 0.8rem;
+/* --------------------------------------------------------------------------
+   11. MODALS
+   -------------------------------------------------------------------------- */
+.modal-content {
+  border: 0 !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  overflow: hidden;
+}
+.modal-header {
+  border-bottom: 1px solid var(--border);
+  padding: 1.1rem 1.5rem;
+  background: var(--surface);
+}
+.modal-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-heading);
+}
+.modal-body {
+  padding: 1.25rem 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.modal-footer {
+  border-top: 1px solid var(--border);
+  padding: 0.9rem 1.5rem;
+  background: #fafafa;
+  gap: 0.5rem;
+}
+.modal-backdrop {
+  background-color: rgba(17, 25, 54, 0.6) !important;
+  backdrop-filter: blur(2px);
+}
+
+/* --------------------------------------------------------------------------
+   12. TOAST NOTIFICATIONS (React-Toastify overrides)
+   -------------------------------------------------------------------------- */
+.Toastify__toast {
+  border-radius: var(--radius-md) !important;
+  font-family: inherit !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  box-shadow: var(--shadow-md) !important;
+  padding: 0.75rem 1rem !important;
+  min-height: 52px !important;
+}
+.Toastify__toast--success {
+  background: var(--success-soft) !important;
+  color: var(--success) !important;
+  border: 1px solid rgba(22, 163, 74, 0.2) !important;
+}
+.Toastify__toast--error {
+  background: var(--danger-soft) !important;
+  color: var(--danger) !important;
+  border: 1px solid rgba(220, 38, 38, 0.2) !important;
+}
+.Toastify__toast--info {
+  background: var(--info-soft) !important;
+  color: var(--info) !important;
+  border: 1px solid rgba(37, 99, 235, 0.2) !important;
+}
+.Toastify__toast--warning {
+  background: var(--warning-soft) !important;
+  color: var(--warning) !important;
+  border: 1px solid rgba(234, 88, 12, 0.2) !important;
+}
+.Toastify__progress-bar--success { background: var(--success) !important; }
+.Toastify__progress-bar--error   { background: var(--danger) !important; }
+.Toastify__progress-bar--info    { background: var(--info) !important; }
+.Toastify__progress-bar--warning { background: var(--warning) !important; }
+.Toastify__close-button {
+  color: currentColor !important;
+  opacity: 0.6;
+}
+.Toastify__close-button:hover {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   13. LOADER / SPINNER
+   -------------------------------------------------------------------------- */
+.spinner-border.text-primary {
+  color: var(--primary) !important;
+  width: 2rem;
+  height: 2rem;
+  border-width: 0.2em;
+}
+
+/* --------------------------------------------------------------------------
+   14. EMPTY STATE
+   -------------------------------------------------------------------------- */
+.empty-state {
+  padding: 3.5rem 2rem;
+  text-align: center;
+  border-radius: var(--radius-md);
+}
+.empty-state-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 0.4rem;
+}
+.empty-state-desc {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   15. PROGRESS BARS (dashboard breakdowns)
+   -------------------------------------------------------------------------- */
+.progress {
+  background-color: var(--border) !important;
+  border-radius: 999px !important;
+  overflow: hidden;
+}
+.progress-bar {
+  border-radius: 999px !important;
+  transition: width 0.4s ease !important;
+}
+.progress-bar.bg-primary  { background-color: var(--primary)  !important; }
+.progress-bar.bg-danger   { background-color: var(--danger)   !important; }
+.progress-bar.bg-warning  { background-color: var(--warning)  !important; }
+.progress-bar.bg-success  { background-color: var(--success)  !important; }
+.progress-bar.bg-info     { background-color: var(--info)     !important; }
+.progress-bar.bg-secondary{ background-color: var(--text-muted)!important; }
+
+/* --------------------------------------------------------------------------
+   16. SECTION HEADINGS (page titles, section labels)
+   -------------------------------------------------------------------------- */
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   17. REQUEST DETAIL PAGE — meta field labels
+   -------------------------------------------------------------------------- */
+.detail-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: #64748b;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+  display: block;
+}
+.detail-value {
+  font-size: 0.9rem;
   font-weight: 600;
+  color: var(--text);
+}
+
+/* --------------------------------------------------------------------------
+   18. ADMIN CONTROLS PANEL (RequestDetails sidebar)
+   -------------------------------------------------------------------------- */
+.admin-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.admin-panel-header {
+  background: #f8f9fb;
+  border-bottom: 1px solid var(--border);
+  padding: 0.9rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.admin-panel-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* --------------------------------------------------------------------------
+   19. ALERT / INFO BOXES
+   -------------------------------------------------------------------------- */
+.alert-info-custom {
+  background: var(--info-soft);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  border-radius: var(--radius-sm);
+  color: var(--info);
+  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+}
+.alert-warning-custom {
+  background: var(--warning-soft);
+  border: 1px solid rgba(234, 88, 12, 0.15);
+  border-radius: var(--radius-sm);
+  color: var(--warning);
+  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+}
+.alert-success-custom {
+  background: var(--success-soft);
+  border: 1px solid rgba(22, 163, 74, 0.15);
+  border-radius: var(--radius-sm);
+  color: var(--success);
+  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+}
+
+/* Alert-light override (demo creds box in Login) */
+.alert-light {
+  background: var(--primary-soft) !important;
+  border-color: rgba(79, 70, 229, 0.15) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* --------------------------------------------------------------------------
+   20. RESPONSIVE
+   -------------------------------------------------------------------------- */
+
+/* Mobile – ≈375px */
+@media (max-width: 575.98px) {
+  body {
+    font-size: 14px;
+  }
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .portal-main {
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+  }
+  .portal-card .card-body,
+  .portal-card.card-body {
+    padding: 1rem;
+  }
+  .stat-card .stat-value {
+    font-size: 1.6rem;
+  }
+  /* Prevent long titles overflowing on mobile */
+  .table td,
+  .table th {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Auth card */
+  .auth-card .card-body {
+    padding: 1.5rem 1.25rem !important;
+  }
+  /* Page header stack */
+  .page-header-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.75rem;
+  }
+  /* Btn group stack on small mobile */
+  .btn-group.btn-group-sm {
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+}
+
+/* Tablet – ≈768px */
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .stat-card .stat-value {
+    font-size: 1.75rem;
+  }
+}
+
+/* Desktop – ≥1280px */
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
+/* No horizontal page scroll at any width */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Touch-friendly control heights on mobile */
+@media (max-width: 767.98px) {
+  .form-control,
+  .form-select,
+  .btn {
+    min-height: 44px;
+  }
+  .btn-sm {
+    min-height: 36px;
+  }
+  .nav-link {
+    padding: 0.65rem 0.9rem !important;
+  }
+  /* Mobile card view spacing */
+  .mobile-request-cards .card-body {
+    padding: 1rem;
+  }
 }

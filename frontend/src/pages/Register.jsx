@@ -65,83 +65,93 @@ const Register = () => {
 
   return (
     <div className="auth-wrapper">
-      <div className="card portal-card auth-card">
-        <div className="card-body p-4 p-md-5">
-          <h3 className="fw-bold text-center mb-1">Create Account</h3>
-          <p className="text-muted text-center small mb-4">
-            Register as a user to submit service requests
-          </p>
-
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="mb-3">
-              <label htmlFor="reg-name" className="form-label fw-semibold">
-                Full Name
-              </label>
-              <input
-                id="reg-name"
-                type="text"
-                className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                placeholder="Jane Doe"
-                value={formData.name}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, name: e.target.value }));
-                  if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+      <div className="auth-card">
+        <div className="card portal-card">
+          <div className="card-body p-4 p-md-5">
+            <div className="text-center mb-4">
+              <div
+                style={{
+                  width: 48, height: 48, borderRadius: 12,
+                  background: 'var(--primary)',
+                  margin: '0 auto 1rem',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}
-                disabled={submitting}
-              />
-              {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="8" r="4" fill="white"/>
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M19 11v6m-3-3h6" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <h1 className="auth-title">Create Account</h1>
+              <p className="auth-subtitle">Register to submit service requests</p>
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="reg-email" className="form-label fw-semibold">
-                Email Address
-              </label>
-              <input
-                id="reg-email"
-                type="email"
-                className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                placeholder="jane@example.com"
-                value={formData.email}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, email: e.target.value }));
-                  if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
-                }}
+            <form onSubmit={handleSubmit} noValidate>
+              <div className="mb-3">
+                <label htmlFor="reg-name" className="form-label">Full Name</label>
+                <input
+                  id="reg-name"
+                  type="text"
+                  className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                  placeholder="Jane Doe"
+                  value={formData.name}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, name: e.target.value }));
+                    if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+                  }}
+                  disabled={submitting}
+                />
+                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="reg-email" className="form-label">Email Address</label>
+                <input
+                  id="reg-email"
+                  type="email"
+                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                  placeholder="jane@example.com"
+                  value={formData.email}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, email: e.target.value }));
+                    if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+                  }}
+                  disabled={submitting}
+                />
+                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="reg-password" className="form-label">Password</label>
+                <input
+                  id="reg-password"
+                  type="password"
+                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                  placeholder="Minimum 6 characters"
+                  value={formData.password}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, password: e.target.value }));
+                    if (errors.password) setErrors((prev) => ({ ...prev, password: '' }));
+                  }}
+                  disabled={submitting}
+                />
+                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary w-100 py-2"
                 disabled={submitting}
-              />
-              {errors.email && <div className="invalid-feedback">{errors.email}</div>}
-            </div>
+              >
+                {submitting ? 'Creating account…' : 'Create Account'}
+              </button>
+            </form>
 
-            <div className="mb-4">
-              <label htmlFor="reg-password" className="form-label fw-semibold">
-                Password
-              </label>
-              <input
-                id="reg-password"
-                type="password"
-                className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                placeholder="Minimum 6 characters"
-                value={formData.password}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, password: e.target.value }));
-                  if (errors.password) setErrors((prev) => ({ ...prev, password: '' }));
-                }}
-                disabled={submitting}
-              />
-              {errors.password && <div className="invalid-feedback">{errors.password}</div>}
-            </div>
-
-            <button
-              type="submit"
-              className="btn btn-primary w-100 py-2 fw-semibold"
-              disabled={submitting}
-            >
-              {submitting ? 'Creating account...' : 'Register'}
-            </button>
-          </form>
-
-          <p className="text-center small text-muted mt-4 mb-0">
-            Already have an account? <Link to="/login">Sign in</Link>
-          </p>
+            <p className="text-center mt-4 mb-0" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+              Already have an account? <Link to="/login">Sign in</Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

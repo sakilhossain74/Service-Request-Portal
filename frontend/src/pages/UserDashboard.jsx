@@ -33,10 +33,10 @@ const UserDashboard = () => {
 
   return (
     <div>
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 page-header-row">
         <div>
-          <h2 className="fw-bold mb-1">My Dashboard</h2>
-          <p className="text-muted mb-0">Overview of your submitted service requests</p>
+          <h2 className="page-title">My Dashboard</h2>
+          <p className="page-subtitle">Overview of your submitted service requests</p>
         </div>
         <Link to="/requests/new" className="btn btn-primary">
           + Create Request
@@ -62,7 +62,7 @@ const UserDashboard = () => {
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="fw-semibold mb-0">Recent Requests</h5>
+        <h5 className="section-title">Recent Requests</h5>
         <Link to="/requests" className="btn btn-sm btn-outline-primary">
           View All
         </Link>
@@ -82,7 +82,7 @@ const UserDashboard = () => {
         <div className="card portal-card">
           <div className="table-responsive">
             <table className="table table-hover align-middle mb-0">
-              <thead className="table-light">
+              <thead>
                 <tr>
                   <th>Title</th>
                   <th>Category</th>
@@ -106,7 +106,7 @@ const UserDashboard = () => {
                     <td>
                       <StatusBadge status={req.status} />
                     </td>
-                    <td className="text-muted small">{formatDate(req.createdAt)}</td>
+                    <td className="text-muted" style={{ fontSize: '0.8rem' }}>{formatDate(req.createdAt)}</td>
                   </tr>
                 ))}
               </tbody>

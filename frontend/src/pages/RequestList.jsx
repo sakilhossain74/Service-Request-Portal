@@ -84,14 +84,12 @@ const RequestList = () => {
 
   return (
     <div>
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 page-header-row">
         <div>
-          <h2 className="fw-bold mb-1">
+          <h2 className="page-title">
             {isAdmin ? 'All Service Requests' : 'My Service Requests'}
           </h2>
-          <p className="text-muted mb-0">
-            Search, filter, and manage service requests
-          </p>
+          <p className="page-subtitle">Search, filter, and manage service requests</p>
         </div>
         <Link to="/requests/new" className="btn btn-primary">
           + New Request
