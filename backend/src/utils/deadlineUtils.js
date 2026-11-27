@@ -1,13 +1,3 @@
-/**
- * Deadline & overdue helpers.
- * Timezone policy:
- * - Date-only strings ("YYYY-MM-DD" from HTML date inputs) are normalized to 23:59:59.999Z
- *   so a request due "today" remains valid throughout the calendar day and is not marked
- *   overdue until that day ends.
- * - Past-date validation compares calendar days (YYYY-MM-DD) against the server's local
- *   today date so "today" is always permitted.
- */
-
 export const getTodayDateString = (now = new Date()) => {
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');

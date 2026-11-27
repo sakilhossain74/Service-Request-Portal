@@ -13,9 +13,7 @@ const formatUser = (user) => ({
   createdAt: user.createdAt
 });
 
-// @desc    Register a new user account (always forces 'user' role)
-// @route   POST /api/auth/register
-// @access  Public
+
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -26,7 +24,6 @@ export const register = asyncHandler(async (req, res) => {
     ]);
   }
 
-  // Explicitly force role to ROLES.USER to prevent privilege escalation
   const user = await User.create({
     name,
     email,
@@ -46,9 +43,6 @@ export const register = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Authenticate user and return JWT
-// @route   POST /api/auth/login
-// @access  Public
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -73,9 +67,7 @@ export const login = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Get current logged-in user profile
-// @route   GET /api/auth/me
-// @access  Private
+
 export const getMe = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,

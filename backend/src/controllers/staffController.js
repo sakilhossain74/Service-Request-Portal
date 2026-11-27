@@ -2,9 +2,7 @@ import Staff from '../models/Staff.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import ApiError from '../utils/ApiError.js';
 
-// @desc    List active staff members for assignment dropdown
-// @route   GET /api/staff
-// @access  Private (Admin only)
+
 export const getStaff = asyncHandler(async (_req, res) => {
   const staff = await Staff.find({ isActive: true }).sort({ name: 1 }).lean();
 
@@ -15,9 +13,7 @@ export const getStaff = asyncHandler(async (_req, res) => {
   });
 });
 
-// @desc    Add a new staff member
-// @route   POST /api/staff
-// @access  Private (Admin only)
+
 export const createStaff = asyncHandler(async (req, res) => {
   const { name, email, department } = req.body;
 
@@ -47,9 +43,7 @@ export const createStaff = asyncHandler(async (req, res) => {
 });
 
 
-// @desc    Deactivate a staff member
-// @route   PATCH /api/staff/:id/deactivate
-// @access  Private (Admin only)
+
 export const deactivateStaff = asyncHandler(async (req, res) => {
   const staff = await Staff.findById(req.params.id);
 
@@ -67,9 +61,7 @@ export const deactivateStaff = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc Get all staff members (active and inactive)
-// @route GET /api/staff/all
-// @access Private (Admin only)
+
 export const getAllStaff = asyncHandler(async (_req, res) => {
   const staff = await Staff.find().sort({ name: 1 }).lean();
 
@@ -80,9 +72,7 @@ export const getAllStaff = asyncHandler(async (_req, res) => {
   });
 });
 
-// @desc Reactivate a staff member
-// @route PATCH /api/staff/:id/reactivate
-// @access Private (Admin only)
+
 export const reactivateStaff = asyncHandler(async (req, res) => {
   const staff = await Staff.findById(req.params.id);
 

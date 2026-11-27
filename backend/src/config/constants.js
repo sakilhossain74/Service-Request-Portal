@@ -26,9 +26,9 @@ export const STAFF_DEPARTMENTS = [
   'General'
 ];
 
-// Allowed status transitions enforced on the backend
+
 export const ALLOWED_STATUS_TRANSITIONS = {
-  Pending: [], // Must assign staff to move from Pending -> Assigned
+  Pending: [],
   Assigned: ['In Progress', 'Resolved'],
   'In Progress': ['Resolved'],
   Resolved: []

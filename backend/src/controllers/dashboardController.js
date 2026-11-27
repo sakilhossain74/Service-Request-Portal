@@ -3,7 +3,6 @@ import { CATEGORIES, PRIORITIES, ROLES, STATUSES } from '../config/constants.js'
 import asyncHandler from '../utils/asyncHandler.js';
 import { attachOverdueFlag } from '../utils/deadlineUtils.js';
 
-// Helper to initialize all enum keys to 0 so UI never receives undefined counts
 const mapAggregationCounts = (keys, rows) => {
   const counts = Object.fromEntries(keys.map((key) => [key, 0]));
   for (const row of rows) {
@@ -14,9 +13,7 @@ const mapAggregationCounts = (keys, rows) => {
   return counts;
 };
 
-// @desc    Get dashboard statistics scoped by role (Admin: global, User: own)
-// @route   GET /api/dashboard/stats
-// @access  Private
+
 export const getDashboardStats = asyncHandler(async (req, res) => {
   const matchStage = req.user.role === ROLES.ADMIN ? {} : { createdBy: req.user._id };
 

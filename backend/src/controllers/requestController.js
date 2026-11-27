@@ -12,7 +12,6 @@ import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { attachOverdueFlag, parseAndValidateDueDate } from '../utils/deadlineUtils.js';
 
-// Escape special regex characters so user search input cannot break MongoDB $regex
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const populateRequest = (query) =>
@@ -20,7 +19,6 @@ const populateRequest = (query) =>
     .populate('createdBy', 'name email')
     .populate('assignedTo', 'name email department isActive');
 
-// Build ownership-scoped filter: admins see all, users see only their own requests
 const buildScopedIdFilter = (id, user) => {
   if (user.role === ROLES.ADMIN) {
     return { _id: id };
@@ -28,13 +26,10 @@ const buildScopedIdFilter = (id, user) => {
   return { _id: id, createdBy: user._id };
 };
 
-// @desc    Create a new service request
-// @route   POST /api/requests
-// @access  Private (User & Admin)
+
 export const createRequest = asyncHandler(async (req, res) => {
   const { title, description, category, priority } = req.body;
 
-  // Never trust client-supplied status, assignedTo, or createdBy
   const newRequest = await Request.create({
     title,
     description,
@@ -53,9 +48,7 @@ export const createRequest = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Get all requests (Admin) or own requests (User) with search, filters, pagination
-// @route   GET /api/requests
-// @access  Private
+
 export const getRequests = asyncHandler(async (req, res) => {
   const { search, status, category, priority, sort } = req.query;
 
@@ -104,9 +97,7 @@ export const getRequests = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Get single request by ID
-// @route   GET /api/requests/:id
-// @access  Private (Owner or Admin)
+
 export const getRequestById = asyncHandler(async (req, res) => {
   const filter = buildScopedIdFilter(req.params.id, req.user);
   const request = await populateRequest(Request.findOne(filter));
@@ -122,9 +113,7 @@ export const getRequestById = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Update request fields (Admin: any, User: own & Pending only)
-// @route   PUT /api/requests/:id
-// @access  Private (Owner Pending or Admin)
+
 export const updateRequest = asyncHandler(async (req, res) => {
   const filter = buildScopedIdFilter(req.params.id, req.user);
   const request = await Request.findOne(filter);
@@ -157,9 +146,7 @@ export const updateRequest = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Delete request (Admin: any, User: own & Pending only)
-// @route   DELETE /api/requests/:id
-// @access  Private (Owner Pending or Admin)
+
 export const deleteRequest = asyncHandler(async (req, res) => {
   const filter = buildScopedIdFilter(req.params.id, req.user);
   const request = await Request.findOne(filter);
@@ -181,9 +168,7 @@ export const deleteRequest = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Assign or reassign a staff member to a request
-// @route   PATCH /api/requests/:id/assign
-// @access  Private (Admin only)
+
 export const assignStaff = asyncHandler(async (req, res) => {
   const { staffId } = req.body;
 
@@ -212,7 +197,6 @@ export const assignStaff = asyncHandler(async (req, res) => {
   await request.save();
   const populated = await populateRequest(Request.findById(request._id));
 
-  // Notify newly assigned active staff member (skip duplicate email if reassigned to the same staff)
   const assignedStaff = populated.assignedTo;
   if (
     previousStaffId !== staff._id.toString() &&
@@ -221,10 +205,10 @@ export const assignStaff = asyncHandler(async (req, res) => {
   ) {
     const formattedDueDate = populated.dueDate
       ? new Date(populated.dueDate).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        })
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      })
       : 'Not set';
 
     try {
@@ -259,9 +243,7 @@ Service Request & Resolution Portal`
   });
 });
 
-// @desc    Update request workflow status
-// @route   PATCH /api/requests/:id/status
-// @access  Private (Admin only)
+
 export const updateRequestStatus = asyncHandler(async (req, res) => {
   const { status: newStatus } = req.body;
 
@@ -331,9 +313,6 @@ Service Request & Resolution Portal`
   });
 });
 
-// @desc    Set or update request due date (does not alter assignment or status)
-// @route   PATCH /api/requests/:id/due-date
-// @access  Private (Admin only)
 export const updateDueDate = asyncHandler(async (req, res) => {
   const request = await Request.findById(req.params.id);
   if (!request) {
