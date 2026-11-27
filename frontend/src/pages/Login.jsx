@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { extractErrorMessage } from '../utils/formatters';
+import useReveal from '../hooks/useReveal';
 
 const Login = () => {
   const { isAuthenticated, login } = useAuth();
@@ -11,6 +13,8 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+
+  const cardRef = useReveal({ direction: 'up', delay: 0 });
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
@@ -51,85 +55,89 @@ const Login = () => {
 
   return (
     <div className="auth-wrapper">
-      <div className="auth-card">
-        <div className="card portal-card">
-          <div className="card-body p-4 p-md-5">
-            <div className="text-center mb-4">
-              <div
-                style={{
-                  width: 48, height: 48, borderRadius: 12,
-                  background: 'var(--primary)',
-                  margin: '0 auto 1rem',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="11" width="18" height="11" rx="2" fill="white" fillOpacity="0.9"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </div>
-              <h1 className="auth-title">Service Portal</h1>
-              <p className="auth-subtitle">Sign in to submit and track service requests</p>
-            </div>
-
-            <form onSubmit={handleSubmit} noValidate>
-              <div className="mb-3">
-                <label htmlFor="login-email" className="form-label">
-                  Email Address
-                </label>
-                <input
-                  id="login-email"
-                  type="email"
-                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, email: e.target.value }));
-                    if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
-                  }}
-                  disabled={submitting}
-                />
-                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="login-password" className="form-label">
-                  Password
-                </label>
-                <input
-                  id="login-password"
-                  type="password"
-                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, password: e.target.value }));
-                    if (errors.password) setErrors((prev) => ({ ...prev, password: '' }));
-                  }}
-                  disabled={submitting}
-                />
-                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary w-100 py-2"
-                disabled={submitting}
-              >
-                {submitting ? 'Signing in…' : 'Sign In'}
-              </button>
-            </form>
-
-            <div className="demo-creds mt-4 mb-3">
-              <div className="fw-semibold mb-1" style={{ color: 'var(--primary)' }}>Demo Credentials</div>
-              <div>Admin: <code>admin@example.com</code> / <code>Admin@123</code></div>
-              <div>User: &nbsp;<code>user@example.com</code> / <code>User@123</code></div>
-            </div>
-
-            <p className="text-center mb-0" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-              Don&apos;t have an account? <Link to="/register">Register here</Link>
+      <div ref={cardRef} className="auth-split-card">
+        <div className="auth-brand-panel">
+          <div>
+            <span className="auth-brand-pill mb-3">
+              <ShieldCheck size={15} />
+              <span>Service Request Portal</span>
+            </span>
+            <h2 className="fw-bold mb-2" style={{ color: 'var(--color-chrome-text)' }}>
+              Streamlined IT &amp; Facility Operations
+            </h2>
+            <p className="mb-0" style={{ color: 'var(--color-chrome-muted)', fontSize: '0.875rem' }}>
+              Submit, assign, track, and resolve service requests with real-time deadline visibility.
             </p>
           </div>
+          <div className="d-none d-md-flex flex-column gap-2 mt-4" style={{ fontSize: '0.825rem' }}>
+            <div className="d-flex align-items-center gap-2">
+              <CheckCircle2 size={15} style={{ color: 'var(--color-accent)' }} />
+              <span>Role-scoped dashboards &amp; permissions</span>
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <CheckCircle2 size={15} style={{ color: 'var(--color-accent)' }} />
+              <span>Staff assignment &amp; SLA deadline tracking</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="auth-form-panel">
+          <div className="mb-4">
+            <h1 className="auth-title mb-1">Sign In</h1>
+            <p className="auth-subtitle mb-0">Enter your credentials to access your workspace</p>
+          </div>
+
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="mb-3">
+              <label htmlFor="login-email" className="form-label">
+                Email Address
+              </label>
+              <input
+                id="login-email"
+                type="email"
+                className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, email: e.target.value }));
+                  if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+                }}
+                disabled={submitting}
+              />
+              {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="login-password" className="form-label">
+                Password
+              </label>
+              <input
+                id="login-password"
+                type="password"
+                className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, password: e.target.value }));
+                  if (errors.password) setErrors((prev) => ({ ...prev, password: '' }));
+                }}
+                disabled={submitting}
+              />
+              {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary w-100 py-2"
+              disabled={submitting}
+            >
+              {submitting ? 'Signing in…' : 'Sign In'}
+            </button>
+          </form>
+
+          <p className="text-center mt-4 mb-0" style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
+            Don&apos;t have an account? <Link to="/register">Register here</Link>
+          </p>
         </div>
       </div>
     </div>

@@ -6,7 +6,8 @@ import {
   updateRequest,
   deleteRequest,
   assignStaff,
-  updateRequestStatus
+  updateRequestStatus,
+  updateDueDate
 } from '../controllers/requestController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -16,6 +17,7 @@ import {
   updateRequestValidator,
   assignStaffValidator,
   updateStatusValidator,
+  updateDueDateValidator,
   requestIdParamValidator
 } from '../validators/requestValidators.js';
 import { ROLES } from '../config/constants.js';
@@ -49,6 +51,14 @@ router.patch(
   updateStatusValidator,
   validate,
   updateRequestStatus
+);
+
+router.patch(
+  '/:id/due-date',
+  authorizeRoles(ROLES.ADMIN),
+  updateDueDateValidator,
+  validate,
+  updateDueDate
 );
 
 export default router;

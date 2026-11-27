@@ -55,6 +55,10 @@ const requestSchema = new mongoose.Schema(
       type: Date,
       default: null
     },
+    dueDate: {
+      type: Date,
+      default: null
+    },
     resolvedAt: {
       type: Date,
       default: null

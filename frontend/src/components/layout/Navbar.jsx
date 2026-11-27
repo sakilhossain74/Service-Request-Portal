@@ -1,9 +1,17 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Menu, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-const Navbar = () => {
-  const { user, isAdmin, logout } = useAuth();
+const getInitials = (name = '') => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'U';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+};
+
+const Navbar = ({ onToggleSidebar }) => {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -12,70 +20,45 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  // NavLink receives isActive from react-router-dom and adds the 'active' class automatically
-  const navLinkClass = ({ isActive }) =>
-    `nav-link${isActive ? ' active' : ''}`;
-
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark navbar-portal">
-      <div className="container">
-        <Link className="navbar-brand" to="/dashboard">
+    <header className="srp-navbar">
+      <div className="d-flex align-items-center gap-3">
+        <button
+          type="button"
+          className="btn btn-sm srp-menu-toggle d-lg-none"
+          onClick={onToggleSidebar}
+          aria-label="Open navigation menu"
+        >
+          <Menu size={20} />
+        </button>
+        <Link className="srp-navbar-title d-lg-none" to="/dashboard">
           Service Portal
         </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#portalNavbar"
-          aria-controls="portalNavbar"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
+        <span className="srp-navbar-env d-none d-lg-inline-block">
+          Service Request &amp; Resolution Portal
+        </span>
+      </div>
 
-        <div className="collapse navbar-collapse" id="portalNavbar">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
-            <li className="nav-item">
-              <NavLink className={navLinkClass} to="/dashboard">
-                Dashboard
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className={navLinkClass} to="/requests">
-                Requests
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className={navLinkClass} to="/requests/new">
-                New Request
-              </NavLink>
-            </li>
-            {isAdmin && (
-              <li className="nav-item">
-                <NavLink className={navLinkClass} to="/admin/assignments">
-                  Assignments
-                </NavLink>
-              </li>
-            )}
-          </ul>
-
-          <div className="d-flex align-items-center gap-3">
-            <span className="nav-user-name">
-              {user?.name}
-              <span className="nav-role-badge">{user?.role}</span>
-            </span>
-            <button
-              type="button"
-              className="btn btn-outline-light btn-sm"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
+      <div className="d-flex align-items-center gap-3">
+        <div className="d-flex align-items-center gap-2">
+          <span className="srp-avatar" aria-hidden="true">
+            {getInitials(user?.name)}
+          </span>
+          <div className="d-none d-sm-flex flex-column lh-sm">
+            <span className="nav-user-name">{user?.name}</span>
+            <span className="nav-role-badge">{user?.role}</span>
           </div>
         </div>
+        <button
+          type="button"
+          className="btn btn-sm srp-logout-btn"
+          onClick={handleLogout}
+        >
+          <LogOut size={15} />
+          <span className="d-none d-sm-inline">Logout</span>
+        </button>
       </div>
-    </nav>
+    </header>
   );
 };
 

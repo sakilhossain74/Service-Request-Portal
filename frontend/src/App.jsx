@@ -14,6 +14,8 @@ import CreateRequest from './pages/CreateRequest';
 import EditRequest from './pages/EditRequest';
 import RequestDetails from './pages/RequestDetails';
 import AdminAssignment from './pages/AdminAssignment';
+import AdminEmployees from './pages/AdminEmployees';
+import AdminThemeSettings from './pages/AdminThemeSettings';
 import NotFound from './pages/NotFound';
 
 const RoleDashboard = () => {
@@ -40,6 +42,8 @@ const App = () => {
 
               <Route element={<RoleRoute allowedRoles={[ROLES.ADMIN]} />}>
                 <Route path="/admin/assignments" element={<AdminAssignment />} />
+                <Route path="/admin/employees" element={<AdminEmployees />} />
+                <Route path="/admin/theme-settings" element={<AdminThemeSettings />} />
               </Route>
             </Route>
           </Route>

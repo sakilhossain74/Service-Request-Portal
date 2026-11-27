@@ -6,12 +6,12 @@ const NotFound = () => {
       <div
         style={{
           width: 80, height: 80, borderRadius: '50%',
-          background: 'var(--primary-soft)',
+          background: 'var(--color-primary-soft)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           marginBottom: '1.5rem'
         }}
       >
-        <span style={{ fontSize: '2rem', color: 'var(--primary)' }}>404</span>
+        <span style={{ fontSize: '2rem', color: 'var(--color-primary)' }}>404</span>
       </div>
       <h2 className="page-title mb-2">Page Not Found</h2>
       <p className="page-subtitle mb-4">The page you are looking for doesn&apos;t exist or has been moved.</p>

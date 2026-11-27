@@ -1,17 +1,34 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {
+  Layers,
+  Clock,
+  UserCheck,
+  Loader2,
+  CheckCircle2,
+  AlertOctagon
+} from 'lucide-react';
 import { getDashboardStats } from '../services/dashboardService';
 import { extractErrorMessage, formatDate } from '../utils/formatters';
 import StatCard from '../components/common/StatCard';
 import StatusBadge from '../components/common/StatusBadge';
 import PriorityBadge from '../components/common/PriorityBadge';
+import OverdueBadge from '../components/common/OverdueBadge';
 import Loader from '../components/common/Loader';
 import EmptyState from '../components/common/EmptyState';
+import CategoryDonutChart from '../components/common/CategoryDonutChart';
+import useReveal from '../hooks/useReveal';
+import useStaggerReveal from '../hooks/useStaggerReveal';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Reveal refs (applied to cards/sections only — headings remain permanently visible)
+  const statRowRef    = useStaggerReveal({ direction: 'up', baseDelay: 60, stagger: 80 });
+  const recentCardRef = useReveal({ direction: 'up', delay: 80 });
+  const breakdownRef  = useReveal({ direction: 'up', delay: 0 });
 
   useEffect(() => {
     const loadStats = async () => {
@@ -37,7 +54,7 @@ const AdminDashboard = () => {
   const getPercentage = (count) => (total > 0 ? Math.round((count / total) * 100) : 0);
 
   return (
-    <div>
+    <div className="page-fade-in">
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 page-header-row">
         <div>
           <h2 className="page-title">Admin Dashboard</h2>
@@ -53,73 +70,24 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      <div className="row g-3 mb-4">
+      <div ref={statRowRef} className="row g-3 mb-4">
         <div className="col-6 col-md-4 col-xl">
-          <StatCard title="Total" value={total} accent="dark" />
-        </div>
-        <div className="col-6 col-md-4 col-xl">
-          <StatCard title="Pending" value={byStatus.Pending ?? 0} accent="warning" />
+          <StatCard title="Total" value={total} accent="dark" icon={Layers} />
         </div>
         <div className="col-6 col-md-4 col-xl">
-          <StatCard title="Assigned" value={byStatus.Assigned ?? 0} accent="info" />
+          <StatCard title="Pending" value={byStatus.Pending ?? 0} accent="warning" icon={Clock} />
         </div>
-        <div className="col-6 col-md-6 col-xl">
-          <StatCard title="In Progress" value={byStatus['In Progress'] ?? 0} accent="primary" />
+        <div className="col-6 col-md-4 col-xl">
+          <StatCard title="Assigned" value={byStatus.Assigned ?? 0} accent="info" icon={UserCheck} />
         </div>
-        <div className="col-12 col-md-6 col-xl">
-          <StatCard title="Resolved" value={byStatus.Resolved ?? 0} accent="success" />
+        <div className="col-6 col-md-4 col-xl">
+          <StatCard title="In Progress" value={byStatus['In Progress'] ?? 0} accent="primary" icon={Loader2} />
         </div>
-      </div>
-
-      <div className="row g-3 mb-4">
-        <div className="col-md-6">
-          <div className="card portal-card h-100">
-            <div className="card-body">
-              <h6 className="section-title mb-3">Breakdown by Priority</h6>
-              {Object.entries(byPriority).map(([priority, count]) => (
-                <div key={priority} className="mb-3">
-                  <div className="d-flex justify-content-between mb-1" style={{ fontSize: '0.8125rem' }}>
-                    <span style={{ color: 'var(--text)' }}>{priority}</span>
-                    <span style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{count}</span>
-                  </div>
-                  <div className="progress" style={{ height: '8px' }}>
-                    <div
-                      className={`progress-bar ${
-                        priority === 'High'
-                          ? 'bg-danger'
-                          : priority === 'Medium'
-                          ? 'bg-warning'
-                          : 'bg-secondary'
-                      }`}
-                      style={{ width: `${getPercentage(count)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className="col-6 col-md-4 col-xl">
+          <StatCard title="Resolved" value={byStatus.Resolved ?? 0} accent="success" icon={CheckCircle2} />
         </div>
-
-        <div className="col-md-6">
-          <div className="card portal-card h-100">
-            <div className="card-body">
-              <h6 className="section-title mb-3">Breakdown by Category</h6>
-              {Object.entries(byCategory).map(([category, count]) => (
-                <div key={category} className="mb-2">
-                  <div className="d-flex justify-content-between mb-1" style={{ fontSize: '0.8125rem' }}>
-                    <span style={{ color: 'var(--text)' }}>{category}</span>
-                    <span style={{ fontWeight: 600, color: 'var(--text-heading)' }}>{count}</span>
-                  </div>
-                  <div className="progress" style={{ height: '6px' }}>
-                    <div
-                      className="progress-bar bg-primary"
-                      style={{ width: `${getPercentage(count)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div className="col-6 col-md-4 col-xl">
+          <StatCard title="Overdue" value={stats?.overdue ?? 0} accent="danger" icon={AlertOctagon} />
         </div>
       </div>
 
@@ -133,9 +101,9 @@ const AdminDashboard = () => {
       {!stats?.recent?.length ? (
         <EmptyState title="No requests in the system yet" />
       ) : (
-        <div className="card portal-card">
-          <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
+        <div ref={recentCardRef} className="card portal-card">
+          <div className="table-responsive dashboard-table-scroll">
+            <table className="table table-hover align-middle mb-0 dashboard-recent-table dashboard-recent-table-admin">
               <thead>
                 <tr>
                   <th>Title</th>
@@ -159,10 +127,13 @@ const AdminDashboard = () => {
                       <PriorityBadge priority={req.priority} />
                     </td>
                     <td>
-                      <StatusBadge status={req.status} />
+                      <div className="d-flex flex-wrap align-items-center gap-1">
+                        <StatusBadge status={req.status} />
+                        <OverdueBadge request={req} />
+                      </div>
                     </td>
-                    <td>{req.assignedTo?.name || <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Unassigned</span>}</td>
-                    <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{formatDate(req.createdAt)}</td>
+                    <td>{req.assignedTo?.name || <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>Unassigned</span>}</td>
+                    <td style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>{formatDate(req.createdAt)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -170,6 +141,44 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
+
+      <div ref={breakdownRef} className="row g-3 mt-4">
+        <div className="col-md-6">
+          <div className="card portal-card h-100">
+            <div className="card-body">
+              <h6 className="section-title mb-3">Breakdown by Priority</h6>
+              {Object.entries(byPriority).map(([priority, count]) => (
+                <div key={priority} className="mb-3">
+                  <div className="d-flex justify-content-between mb-1" style={{ fontSize: '0.8125rem' }}>
+                    <span style={{ color: 'var(--color-text)' }}>{priority}</span>
+                    <span style={{ fontWeight: 600, color: 'var(--color-text-heading)' }}>{count}</span>
+                  </div>
+                  <div className="progress" style={{ height: '8px' }}>
+                    <div
+                      className={`progress-bar ${priority === 'High'
+                        ? 'bg-danger'
+                        : priority === 'Medium'
+                          ? 'bg-warning'
+                          : 'bg-secondary'
+                        }`}
+                      style={{ width: `${getPercentage(count)}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-6">
+          <div className="card portal-card h-100">
+            <div className="card-body">
+              <h6 className="section-title mb-3">Breakdown by Category</h6>
+              <CategoryDonutChart byCategory={byCategory} total={total} />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

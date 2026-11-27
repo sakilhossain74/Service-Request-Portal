@@ -34,3 +34,8 @@ export const updateRequestStatus = async (id, status) => {
   const { data } = await api.patch(`/requests/${id}/status`, { status });
   return data.data;
 };
+
+export const updateDueDate = async (id, dueDate) => {
+  const { data } = await api.patch(`/requests/${id}/due-date`, { dueDate });
+  return data.data;
+};

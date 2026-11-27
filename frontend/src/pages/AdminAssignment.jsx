@@ -4,18 +4,26 @@ import { toast } from 'react-toastify';
 import {
   assignStaff,
   getRequests,
+  updateDueDate,
   updateRequestStatus
 } from '../services/requestService';
 import { getStaffList } from '../services/staffService';
 import useDebounce from '../hooks/useDebounce';
 import { ALLOWED_STATUS_TRANSITIONS } from '../utils/constants';
-import { extractErrorMessage, formatDate } from '../utils/formatters';
+import {
+  extractErrorMessage,
+  formatDate,
+  getTodayDateInputValue,
+  toDateInputValue
+} from '../utils/formatters';
 import RequestFilters from '../components/requests/RequestFilters';
 import StatusBadge from '../components/common/StatusBadge';
 import PriorityBadge from '../components/common/PriorityBadge';
+import OverdueBadge from '../components/common/OverdueBadge';
 import Pagination from '../components/common/Pagination';
 import Loader from '../components/common/Loader';
 import EmptyState from '../components/common/EmptyState';
+import useReveal from '../hooks/useReveal';
 
 const INITIAL_FILTERS = {
   search: '',
@@ -30,6 +38,7 @@ const AdminAssignment = () => {
   const [requests, setRequests] = useState([]);
   const [staffList, setStaffList] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState({});
+  const [dueDates, setDueDates] = useState({});
   const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1, limit: 10 });
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
@@ -59,10 +68,13 @@ const AdminAssignment = () => {
       setStaffList(staffData || []);
 
       const initialSelections = {};
+      const initialDueDates = {};
       rows.forEach((r) => {
         initialSelections[r._id] = r.assignedTo?._id || '';
+        initialDueDates[r._id] = toDateInputValue(r.dueDate);
       });
       setSelectedStaff(initialSelections);
+      setDueDates(initialDueDates);
     } catch (error) {
       toast.error(extractErrorMessage(error, 'Failed to load assignment queue'));
     } finally {
@@ -117,8 +129,29 @@ const AdminAssignment = () => {
     }
   };
 
+  const handleSaveDueDate = async (requestId) => {
+    const dueDateValue = dueDates[requestId];
+    if (!dueDateValue) {
+      toast.warning('Please select a due date first');
+      return;
+    }
+
+    setBusyId(requestId);
+    try {
+      await updateDueDate(requestId, dueDateValue);
+      toast.success('Due date updated successfully');
+      loadData();
+    } catch (error) {
+      toast.error(extractErrorMessage(error, 'Failed to update due date'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const tableRef  = useReveal({ direction: 'up', delay: 80 });
+
   return (
-    <div>
+    <div className="page-fade-in">
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 page-header-row">
         <div>
           <h2 className="page-title">Assignments &amp; Workflow</h2>
@@ -148,7 +181,7 @@ const AdminAssignment = () => {
         />
       ) : (
         <>
-          <div className="card portal-card">
+          <div ref={tableRef} className="card portal-card">
             <div className="table-responsive">
               <table className="table table-hover align-middle mb-0">
                 <thead>
@@ -157,6 +190,7 @@ const AdminAssignment = () => {
                     <th>Requester</th>
                     <th>Priority</th>
                     <th>Status</th>
+                    <th style={{ minWidth: '215px' }}>Due Date</th>
                     <th style={{ minWidth: '260px' }}>Assign Staff</th>
                     <th style={{ minWidth: '180px' }}>Advance Status</th>
                   </tr>
@@ -172,11 +206,11 @@ const AdminAssignment = () => {
                           <Link
                             to={`/requests/${req._id}`}
                             className="fw-medium text-decoration-none d-block"
-                            style={{ color: 'var(--text-heading)' }}
+                            style={{ color: 'var(--color-text-heading)' }}
                           >
                             {req.title}
                           </Link>
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: '0.78rem' }}>
                             {req.category} · {formatDate(req.createdAt)}
                           </span>
                         </td>
@@ -185,7 +219,39 @@ const AdminAssignment = () => {
                           <PriorityBadge priority={req.priority} />
                         </td>
                         <td>
-                          <StatusBadge status={req.status} />
+                          <div className="d-flex flex-wrap align-items-center gap-1">
+                            <StatusBadge status={req.status} />
+                            <OverdueBadge request={req} />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="input-group input-group-sm">
+                            <input
+                              type="date"
+                              className="form-control"
+                              min={getTodayDateInputValue()}
+                              value={dueDates[req._id] || ''}
+                              disabled={req.status === 'Resolved' || isBusy}
+                              onChange={(e) =>
+                                setDueDates((prev) => ({
+                                  ...prev,
+                                  [req._id]: e.target.value
+                                }))
+                              }
+                            />
+                            <button
+                              type="button"
+                              className="btn btn-outline-primary"
+                              disabled={
+                                req.status === 'Resolved' ||
+                                isBusy ||
+                                !dueDates[req._id]
+                              }
+                              onClick={() => handleSaveDueDate(req._id)}
+                            >
+                              {isBusy ? '…' : 'Save'}
+                            </button>
+                          </div>
                         </td>
                         <td>
                           <div className="input-group input-group-sm">
@@ -223,7 +289,7 @@ const AdminAssignment = () => {
                         </td>
                         <td>
                           {allowedNext.length === 0 ? (
-                            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                            <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>
                               {req.status === 'Pending' ? 'Assign staff first' : 'Completed'}
                             </span>
                           ) : (

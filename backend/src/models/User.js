@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema(
         message: 'Role must be either admin or user'
       },
       default: ROLES.USER
+    },
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   { timestamps: true }

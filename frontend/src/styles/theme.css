@@ -1,0 +1,83 @@
+/* ==========================================================================
+   Centralized Theme Variables — ServiceNow-Inspired Enterprise Palette
+   All colors are defined as CSS custom properties on :root so they can be
+   customized live via Admin Theme Settings and persisted in localStorage.
+   ========================================================================== */
+
+:root {
+  /* Core 8 customizable theme colors */
+  --color-primary:        #62d84e;
+  --color-secondary:      #0b2a3c;
+  --color-accent:         #62d84e;
+  --color-sidebar-bg:     #032d42;
+  --color-navbar-bg:      #032d42;
+  --color-background:     #f5f7f8;
+  --color-card-bg:        #ffffff;
+  --color-text:           #1b2a33;
+
+  /* Derived & supporting tokens */
+  --color-primary-hover:  #4ec53a;
+  --color-primary-text:   #032d42;
+  --color-primary-soft:   rgba(98, 216, 78, 0.14);
+  --color-primary-ring:   rgba(98, 216, 78, 0.35);
+
+  --color-text-muted:     #5a6b77;
+  --color-text-heading:   #0f1f29;
+  --color-border:         #dfe5e8;
+  --color-border-strong:  #c5d0d6;
+
+  /* Sidebar & Navbar text tokens */
+  --color-chrome-text:    #d7e3ea;
+  --color-chrome-muted:   #8fa6b5;
+  --color-chrome-hover:   rgba(255, 255, 255, 0.08);
+
+  /* Semantic & Status badge tokens */
+  --color-success:        #15803d;
+  --color-success-soft:   #dcfce7;
+  --color-info:           #1d4ed8;
+  --color-info-soft:      #dbeafe;
+  --color-warning:        #c2410c;
+  --color-warning-soft:   #ffedd5;
+  --color-pending:        #a16207;
+  --color-pending-soft:   #fef3c7;
+  --color-danger:         #b91c1c;
+  --color-danger-soft:    #fee2e2;
+
+  /* Chart series tokens */
+  --color-chart-1:        #62d84e;
+  --color-chart-2:        #0284c7;
+  --color-chart-3:        #f59e0b;
+  --color-chart-4:        #8b5cf6;
+  --color-chart-5:        #0d9488;
+  --color-chart-6:        #64748b;
+
+  /* Typography */
+  --font-family-sans:     'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size-xs:         0.75rem;
+  --font-size-sm:         0.8125rem;
+  --font-size-base:       0.9375rem;
+  --font-size-lg:         1.125rem;
+  --font-size-xl:         1.5rem;
+  --font-size-2xl:        2rem;
+
+  /* Spacing scale */
+  --space-1:              0.25rem;
+  --space-2:              0.5rem;
+  --space-3:              0.75rem;
+  --space-4:              1rem;
+  --space-5:              1.25rem;
+  --space-6:              1.5rem;
+  --space-8:              2rem;
+
+  /* Radii */
+  --radius-sm:            6px;
+  --radius-md:            10px;
+  --radius-lg:            14px;
+
+  /* Shadows */
+  --shadow-sm:            0 1px 3px rgba(3, 45, 66, 0.06);
+  --shadow-md:            0 4px 12px rgba(3, 45, 66, 0.08);
+  --shadow-lg:            0 12px 28px rgba(3, 45, 66, 0.14);
+
+  --transition-fast:      all 0.18s ease;
+}
