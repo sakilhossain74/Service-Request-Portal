@@ -6,6 +6,7 @@ import { getRequestById, updateRequest } from '../services/requestService';
 import { extractErrorMessage } from '../utils/formatters';
 import RequestForm from '../components/requests/RequestForm';
 import Loader from '../components/common/Loader';
+import useReveal from '../hooks/useReveal';
 
 const EditRequest = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ const EditRequest = () => {
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const cardRef = useReveal({ direction: 'up', delay: 60 });
 
   useEffect(() => {
     const loadRequest = async () => {
@@ -49,7 +51,7 @@ const EditRequest = () => {
   const canEdit = isAdmin || request?.status === 'Pending';
 
   return (
-    <div className="row justify-content-center">
+    <div className="row justify-content-center page-fade-in">
       <div className="col-lg-8">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h2 className="page-title mb-0">Edit Service Request</h2>
@@ -64,7 +66,7 @@ const EditRequest = () => {
             <strong>Pending</strong> requests can be edited by the requester.
           </div>
         ) : (
-          <div className="card portal-card">
+          <div ref={cardRef} className="card portal-card">
             <div className="card-body p-4">
               <RequestForm
                 initialValues={{

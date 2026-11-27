@@ -1,5 +1,6 @@
 import Request from '../models/Request.js';
 import Staff from '../models/Staff.js';
+import sendEmail from '../utils/emailService.js';
 import {
   ALLOWED_STATUS_TRANSITIONS,
   CATEGORIES,
@@ -9,6 +10,7 @@ import {
 } from '../config/constants.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { attachOverdueFlag, parseAndValidateDueDate } from '../utils/deadlineUtils.js';
 
 // Escape special regex characters so user search input cannot break MongoDB $regex
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -16,7 +18,7 @@ const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const populateRequest = (query) =>
   query
     .populate('createdBy', 'name email')
-    .populate('assignedTo', 'name email department');
+    .populate('assignedTo', 'name email department isActive');
 
 // Build ownership-scoped filter: admins see all, users see only their own requests
 const buildScopedIdFilter = (id, user) => {
@@ -47,7 +49,7 @@ export const createRequest = asyncHandler(async (req, res) => {
   res.status(201).json({
     success: true,
     message: 'Service request created successfully',
-    data: populated
+    data: attachOverdueFlag(populated)
   });
 });
 
@@ -88,10 +90,11 @@ export const getRequests = asyncHandler(async (req, res) => {
     Request.countDocuments(filter)
   ]);
 
+  const now = new Date();
   res.status(200).json({
     success: true,
     message: 'Requests fetched successfully',
-    data: requests,
+    data: requests.map((doc) => attachOverdueFlag(doc, now)),
     pagination: {
       total,
       page,
@@ -115,7 +118,7 @@ export const getRequestById = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: 'Service request fetched successfully',
-    data: request
+    data: attachOverdueFlag(request)
   });
 });
 
@@ -140,13 +143,17 @@ export const updateRequest = asyncHandler(async (req, res) => {
   if (category !== undefined) request.category = category;
   if (priority !== undefined) request.priority = priority;
 
+
   await request.save();
-  const populated = await populateRequest(Request.findById(request._id));
+
+  const populated = await populateRequest(
+    Request.findById(request._id)
+  );
 
   res.status(200).json({
     success: true,
     message: 'Service request updated successfully',
-    data: populated
+    data: attachOverdueFlag(populated)
   });
 });
 
@@ -194,6 +201,8 @@ export const assignStaff = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Active staff member not found');
   }
 
+  const previousStaffId = request.assignedTo ? request.assignedTo.toString() : null;
+
   request.assignedTo = staff._id;
   request.assignedAt = new Date();
   if (request.status === 'Pending') {
@@ -203,10 +212,50 @@ export const assignStaff = asyncHandler(async (req, res) => {
   await request.save();
   const populated = await populateRequest(Request.findById(request._id));
 
+  // Notify newly assigned active staff member (skip duplicate email if reassigned to the same staff)
+  const assignedStaff = populated.assignedTo;
+  if (
+    previousStaffId !== staff._id.toString() &&
+    assignedStaff?.email &&
+    assignedStaff?.isActive !== false
+  ) {
+    const formattedDueDate = populated.dueDate
+      ? new Date(populated.dueDate).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        })
+      : 'Not set';
+
+    try {
+      await sendEmail({
+        to: assignedStaff.email,
+        subject: 'New Service Request Assigned to You',
+        text: `Hello ${assignedStaff.name},
+
+A service request has been assigned to you. Please review the details below and take action to resolve it.
+
+Title: ${populated.title}
+Description: ${populated.description}
+Category: ${populated.category}
+Priority: ${populated.priority}
+Due Date: ${formattedDueDate}
+Current Status: ${populated.status}
+
+Thank you,
+Service Request & Resolution Portal`
+      });
+
+      console.log(`Assignment email sent to ${assignedStaff.email} for request ${populated._id}`);
+    } catch (emailError) {
+      console.error(`Assignment email failed for ${assignedStaff.email}:`, emailError.message);
+    }
+  }
+
   res.status(200).json({
     success: true,
     message: `Request assigned to ${staff.name}`,
-    data: populated
+    data: attachOverdueFlag(populated)
   });
 });
 
@@ -237,6 +286,7 @@ export const updateRequestStatus = asyncHandler(async (req, res) => {
     );
   }
 
+  const previousStatus = request.status;
   request.status = newStatus;
   if (newStatus === 'Resolved') {
     request.resolvedAt = new Date();
@@ -245,9 +295,68 @@ export const updateRequestStatus = asyncHandler(async (req, res) => {
   await request.save();
   const populated = await populateRequest(Request.findById(request._id));
 
+  // Send resolution email only on transition to Resolved
+  if (previousStatus !== 'Resolved' && newStatus === 'Resolved') {
+    const requester = populated.createdBy;
+    if (requester?.email) {
+      try {
+        await sendEmail({
+          to: requester.email,
+          subject: 'Your Service Request Has Been Resolved',
+          text: `Hello ${requester.name},
+
+Your service request has been successfully resolved.
+
+Title: ${populated.title}
+Category: ${populated.category}
+Status: Resolved
+
+Thank you for using the Service Request & Resolution Portal.
+
+Best regards,
+Service Request & Resolution Portal`
+        });
+
+        console.log(`Resolution email sent to ${requester.email} for request ${populated._id}`);
+      } catch (emailError) {
+        console.error(`Resolution email failed for ${requester.email}:`, emailError.message);
+      }
+    }
+  }
+
   res.status(200).json({
     success: true,
     message: `Request status updated to "${newStatus}"`,
-    data: populated
+    data: attachOverdueFlag(populated)
+  });
+});
+
+// @desc    Set or update request due date (does not alter assignment or status)
+// @route   PATCH /api/requests/:id/due-date
+// @access  Private (Admin only)
+export const updateDueDate = asyncHandler(async (req, res) => {
+  const request = await Request.findById(req.params.id);
+  if (!request) {
+    throw new ApiError(404, 'Service request not found');
+  }
+
+  if (request.status === 'Resolved') {
+    throw new ApiError(400, 'Cannot set or change due date on a Resolved request');
+  }
+
+  const { date, error } = parseAndValidateDueDate(req.body.dueDate);
+  if (error) {
+    throw new ApiError(400, error, [{ field: 'dueDate', message: error }]);
+  }
+
+  request.dueDate = date;
+  await request.save();
+
+  const populated = await populateRequest(Request.findById(request._id));
+
+  res.status(200).json({
+    success: true,
+    message: 'Due date updated successfully',
+    data: attachOverdueFlag(populated)
   });
 });

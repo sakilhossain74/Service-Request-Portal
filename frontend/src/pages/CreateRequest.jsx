@@ -4,10 +4,12 @@ import { toast } from 'react-toastify';
 import { createRequest } from '../services/requestService';
 import { extractErrorMessage } from '../utils/formatters';
 import RequestForm from '../components/requests/RequestForm';
+import useReveal from '../hooks/useReveal';
 
 const CreateRequest = () => {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const cardRef = useReveal({ direction: 'up', delay: 60 });
 
   const handleSubmit = async (payload) => {
     setSubmitting(true);
@@ -23,7 +25,7 @@ const CreateRequest = () => {
   };
 
   return (
-    <div className="row justify-content-center">
+    <div className="row justify-content-center page-fade-in">
       <div className="col-lg-8">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div>
@@ -34,7 +36,7 @@ const CreateRequest = () => {
           </Link>
         </div>
 
-        <div className="card portal-card">
+        <div ref={cardRef} className="card portal-card">
           <div className="card-body p-4">
             <RequestForm
               onSubmit={handleSubmit}

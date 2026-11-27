@@ -83,7 +83,7 @@ const RequestList = () => {
   };
 
   return (
-    <div>
+    <div className="page-fade-in">
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 page-header-row">
         <div>
           <h2 className="page-title">

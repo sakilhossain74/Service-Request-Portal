@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import StatusBadge from '../common/StatusBadge';
 import PriorityBadge from '../common/PriorityBadge';
+import OverdueBadge from '../common/OverdueBadge';
 import { formatDate } from '../../utils/formatters';
 
 const RequestTable = ({ requests, isAdmin, onDeleteClick }) => {
@@ -20,6 +21,7 @@ const RequestTable = ({ requests, isAdmin, onDeleteClick }) => {
                 <th>Status</th>
                 <th>Assigned To</th>
                 {isAdmin && <th>Created By</th>}
+                <th>Due Date</th>
                 <th>Created</th>
                 <th className="text-end">Actions</th>
               </tr>
@@ -37,7 +39,10 @@ const RequestTable = ({ requests, isAdmin, onDeleteClick }) => {
                     <PriorityBadge priority={req.priority} />
                   </td>
                   <td>
-                    <StatusBadge status={req.status} />
+                    <div className="d-flex flex-wrap align-items-center gap-1">
+                      <StatusBadge status={req.status} />
+                      <OverdueBadge request={req} />
+                    </div>
                   </td>
                   <td>
                     {req.assignedTo ? (
@@ -54,6 +59,9 @@ const RequestTable = ({ requests, isAdmin, onDeleteClick }) => {
                       </small>
                     </td>
                   )}
+                  <td className="text-muted small">
+                    {req.dueDate ? formatDate(req.dueDate) : '—'}
+                  </td>
                   <td className="text-muted small">{formatDate(req.createdAt)}</td>
                   <td className="text-end">
                     <div className="btn-group btn-group-sm">
@@ -101,7 +109,10 @@ const RequestTable = ({ requests, isAdmin, onDeleteClick }) => {
                 >
                   {req.title}
                 </Link>
-                <StatusBadge status={req.status} />
+                <div className="d-flex flex-wrap align-items-center gap-1">
+                  <StatusBadge status={req.status} />
+                  <OverdueBadge request={req} />
+                </div>
               </div>
               <div className="d-flex flex-wrap gap-2 mb-2 small text-muted">
                 <span>{req.category}</span>
@@ -112,6 +123,12 @@ const RequestTable = ({ requests, isAdmin, onDeleteClick }) => {
               </div>
               <div className="small text-muted mb-3">
                 Assigned: {req.assignedTo ? req.assignedTo.name : 'Unassigned'}
+                {req.dueDate && (
+                  <>
+                    <br />
+                    Due: {formatDate(req.dueDate)}
+                  </>
+                )}
                 {isAdmin && (
                   <div>
                     Customer: {req.createdBy?.name || '—'}

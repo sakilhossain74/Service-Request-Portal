@@ -85,3 +85,12 @@ export const updateStatusValidator = [
     .isIn(STATUSES)
     .withMessage(`Status must be one of: ${STATUSES.join(', ')}`)
 ];
+
+export const updateDueDateValidator = [
+  ...requestIdParamValidator,
+  body('dueDate')
+    .notEmpty()
+    .withMessage('Due date is required')
+    .isISO8601()
+    .withMessage('Please provide a valid due date')
+];

@@ -1,6 +1,7 @@
 import Request from '../models/Request.js';
 import { CATEGORIES, PRIORITIES, ROLES, STATUSES } from '../config/constants.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { attachOverdueFlag } from '../utils/deadlineUtils.js';
 
 // Helper to initialize all enum keys to 0 so UI never receives undefined counts
 const mapAggregationCounts = (keys, rows) => {
@@ -19,7 +20,8 @@ const mapAggregationCounts = (keys, rows) => {
 export const getDashboardStats = asyncHandler(async (req, res) => {
   const matchStage = req.user.role === ROLES.ADMIN ? {} : { createdBy: req.user._id };
 
-  const [aggregationResult, recent] = await Promise.all([
+  const now = new Date();
+  const [aggregationResult, recent, overdue] = await Promise.all([
     Request.aggregate([
       { $match: matchStage },
       {
@@ -36,7 +38,12 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
       .limit(5)
       .populate('createdBy', 'name email')
       .populate('assignedTo', 'name email department')
-      .lean()
+      .lean(),
+    Request.countDocuments({
+      ...matchStage,
+      dueDate: { $ne: null, $lt: now },
+      status: { $ne: 'Resolved' }
+    })
   ]);
 
   const facets = aggregationResult[0] || {};
@@ -47,10 +54,11 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
     message: 'Dashboard statistics fetched successfully',
     data: {
       total,
+      overdue,
       byStatus: mapAggregationCounts(STATUSES, facets.byStatus || []),
       byPriority: mapAggregationCounts(PRIORITIES, facets.byPriority || []),
       byCategory: mapAggregationCounts(CATEGORIES, facets.byCategory || []),
-      recent
+      recent: recent.map((doc) => attachOverdueFlag(doc, now))
     }
   });
 });

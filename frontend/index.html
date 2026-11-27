@@ -3,7 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Service Request & Resolution Portal</title>
+    <title>Service Request &amp; Resolution Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem('srp_theme_settings_v1');
+          if (!raw) return;
+          var t = JSON.parse(raw);
+          var map = {
+            primary: '--color-primary',
+            secondary: '--color-secondary',
+            accent: '--color-accent',
+            sidebarBg: '--color-sidebar-bg',
+            navbarBg: '--color-navbar-bg',
+            background: '--color-background',
+            cardBg: '--color-card-bg',
+            text: '--color-text'
+          };
+          var root = document.documentElement.style;
+          for (var k in map) {
+            if (t[k]) root.setProperty(map[k], t[k]);
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

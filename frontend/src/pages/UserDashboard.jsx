@@ -1,17 +1,24 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Layers, Clock, UserCheck, Loader2, CheckCircle2 } from 'lucide-react';
 import { getDashboardStats } from '../services/dashboardService';
 import { extractErrorMessage, formatDate } from '../utils/formatters';
 import StatCard from '../components/common/StatCard';
 import StatusBadge from '../components/common/StatusBadge';
 import PriorityBadge from '../components/common/PriorityBadge';
+import OverdueBadge from '../components/common/OverdueBadge';
 import Loader from '../components/common/Loader';
 import EmptyState from '../components/common/EmptyState';
+import useReveal from '../hooks/useReveal';
+import useStaggerReveal from '../hooks/useStaggerReveal';
 
 const UserDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const statRowRef    = useStaggerReveal({ direction: 'up', baseDelay: 60, stagger: 80 });
+  const recentCardRef = useReveal({ direction: 'up', delay: 80 });
 
   useEffect(() => {
     const loadStats = async () => {
@@ -32,7 +39,7 @@ const UserDashboard = () => {
   const byStatus = stats?.byStatus || {};
 
   return (
-    <div>
+    <div className="page-fade-in">
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 page-header-row">
         <div>
           <h2 className="page-title">My Dashboard</h2>
@@ -43,21 +50,21 @@ const UserDashboard = () => {
         </Link>
       </div>
 
-      <div className="row g-3 mb-4">
+      <div ref={statRowRef} className="row g-3 mb-4">
         <div className="col-6 col-md-4 col-xl">
-          <StatCard title="Total" value={stats?.total ?? 0} accent="dark" />
+          <StatCard title="Total" value={stats?.total ?? 0} accent="dark" icon={Layers} />
         </div>
         <div className="col-6 col-md-4 col-xl">
-          <StatCard title="Pending" value={byStatus.Pending ?? 0} accent="warning" />
+          <StatCard title="Pending" value={byStatus.Pending ?? 0} accent="warning" icon={Clock} />
         </div>
         <div className="col-6 col-md-4 col-xl">
-          <StatCard title="Assigned" value={byStatus.Assigned ?? 0} accent="info" />
+          <StatCard title="Assigned" value={byStatus.Assigned ?? 0} accent="info" icon={UserCheck} />
         </div>
         <div className="col-6 col-md-6 col-xl">
-          <StatCard title="In Progress" value={byStatus['In Progress'] ?? 0} accent="primary" />
+          <StatCard title="In Progress" value={byStatus['In Progress'] ?? 0} accent="primary" icon={Loader2} />
         </div>
         <div className="col-12 col-md-6 col-xl">
-          <StatCard title="Resolved" value={byStatus.Resolved ?? 0} accent="success" />
+          <StatCard title="Resolved" value={byStatus.Resolved ?? 0} accent="success" icon={CheckCircle2} />
         </div>
       </div>
 
@@ -79,9 +86,9 @@ const UserDashboard = () => {
           }
         />
       ) : (
-        <div className="card portal-card">
-          <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
+        <div ref={recentCardRef} className="card portal-card">
+          <div className="table-responsive dashboard-table-scroll">
+            <table className="table table-hover align-middle mb-0 dashboard-recent-table dashboard-recent-table-user">
               <thead>
                 <tr>
                   <th>Title</th>
@@ -104,7 +111,10 @@ const UserDashboard = () => {
                       <PriorityBadge priority={req.priority} />
                     </td>
                     <td>
-                      <StatusBadge status={req.status} />
+                      <div className="d-flex flex-wrap align-items-center gap-1">
+                        <StatusBadge status={req.status} />
+                        <OverdueBadge request={req} />
+                      </div>
                     </td>
                     <td className="text-muted" style={{ fontSize: '0.8rem' }}>{formatDate(req.createdAt)}</td>
                   </tr>
